@@ -27,10 +27,17 @@ services:
 
   sonarqube:
     image: sonar-custom
+    depends_on:
+      - sonarqube-db
     ports:
       - "9000:9000"
     volumes:
       - sonarqube-data:/opt/sonarqube/data
+    user: "1000:1000"
+    environment:
+      - SONARQUBE_JDBC_USERNAME=sonarqube
+      - SONARQUBE_JDBC_PASSWORD=sonarqube
+      - SONARQUBE_JDBC_URL=jdbc:postgresql://sonarqube-db:5432/sonarqube
     networks:
       - ci-cd
 
