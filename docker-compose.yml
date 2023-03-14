@@ -3,11 +3,16 @@ version: '3.9'
 services:
 
   jenkins:
-    image: jenkins/jenkins:lts
+    image: jenkins-custom
+    restart: always
+    privileged: true
+    user: root
     ports:
       - "8080:8080"
+      - "50000:50000"
     volumes:
       - jenkins-data:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - ci-cd
 
@@ -16,12 +21,12 @@ services:
     ports:
       - "8081:8081"
     volumes:
-      - nexus-data:/nexus-data
+     - nexus-data:/nexus-data
     networks:
       - ci-cd
 
   sonarqube:
-    image: sonarqube
+    image: sonar-custom
     ports:
       - "9000:9000"
     volumes:
@@ -40,15 +45,20 @@ services:
     networks:
       - ci-cd
   
-  httpd:
-  image: httpd:2.4
-  ports:
-    - "80:80"
-  volumes:
-    - ./httpd.conf:/usr/local/apache2/conf/httpd.conf
-    - ./html:/usr/local/apache2/htdocs/
-  networks:
-    - ci-cd
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: pgadmin@pgadmin.org
+      PGADMIN_DEFAULT_PASSWORD: admin
+    depends_on:
+      - sonarqube-db
+    restart: always
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    networks:
+      - ci-cd
 
 networks:
   ci-cd:
@@ -58,3 +68,4 @@ volumes:
   nexus-data:
   sonarqube-data:
   sonarqube-db-data:
+  pgadmin-data:
