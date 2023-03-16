@@ -3,7 +3,10 @@ version: '3.9'
 services:
 
   jenkins:
-    image: jenkins-custom
+    build: 
+      context: ./jenkins
+      dockerfile: Dockerfile
+    #image: jenkins-custom
     restart: always
     privileged: true
     user: root
@@ -26,13 +29,18 @@ services:
       - ci-cd
 
   sonarqube:
-    image: sonar-custom
+    build: 
+      context: ./sonar
+      dockerfile: Dockerfile
+    #image: sonar-custom
     depends_on:
       - sonarqube-db
     ports:
       - "9000:9000"
     volumes:
       - sonarqube-data:/opt/sonarqube/data
+      - sonarqube-logs:/opt/sonarqube/logs
+      - sonarqube-extensions:/opt/sonarqube/extensions
     user: "1000:1000"
     environment:
       - SONARQUBE_JDBC_USERNAME=sonarqube
@@ -43,20 +51,24 @@ services:
 
   sonarqube-db:
     image: postgres:12
+    restart: always
     environment:
-      - POSTGRES_USER=sonarqube
-      - POSTGRES_PASSWORD=sonarqube
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=secret
       - POSTGRES_DB=sonarqube
     volumes:
       - sonarqube-db-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
     networks:
       - ci-cd
+      - db
   
   pgadmin:
     image: dpage/pgadmin4
     environment:
-      PGADMIN_DEFAULT_EMAIL: pgadmin@pgadmin.org
-      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: secret
     depends_on:
       - sonarqube-db
     restart: always
@@ -65,14 +77,18 @@ services:
     volumes:
       - pgadmin-data:/var/lib/pgadmin
     networks:
+      - db
       - ci-cd
 
 networks:
   ci-cd:
+  db:
 
 volumes:
   jenkins-data:
   nexus-data:
   sonarqube-data:
+  sonarqube-logs:
+  sonarqube-extensions:
   sonarqube-db-data:
   pgadmin-data:
