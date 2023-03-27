@@ -62,7 +62,7 @@ services:
       - "5432:5432"
     networks:
       - ci-cd
-      - db 
+      #- db 
   
   pgadmin:
     image: dpage/pgadmin4
@@ -77,7 +77,8 @@ services:
     volumes:
       - pgadmin-data:/var/lib/pgadmin
     networks:
-      - db
+     - ci-cd
+     # - db
 
 networks:
   ci-cd:
