@@ -78,3 +78,82 @@ pipeline{
        
     }
 }
+
+
+pipeline {
+  agent any
+  
+  environment {
+    SONAR_URL = "http://localhost:9000"
+    NEXUS_REPO_URL = "http://localhost:8081/repository/maven-releases/"
+  }
+  
+  stages {
+    stage('Clone repository') {
+      steps {
+        git branch: 'main', url: 'https://github.com/hambuchmark/java-teszt.git'
+      }
+    }
+    
+    stage('Static Code Analysis') {
+      steps {
+        withSonarQubeEnv('sonar-scanner') {
+          sh 'mvn sonar:sonar -Dsonar.host.url=$SONAR_URL'
+        }
+      }
+    }
+    
+    stage('Build and Deploy') {
+      steps {
+        sh 'mvn clean install deploy -DaltDeploymentRepository=nexus::default::${NEXUS_REPO_URL}'
+      }
+    }
+  }
+}
+
+
+pipeline {
+    agent any
+    stages {
+        stage('Git Checkout') {
+            steps {
+                git url: 'https://github.com/rchidana/calcwebapp.git'    
+		            echo "Code Checked-out Successfully!!";
+            }
+        }
+        
+        stage('Package') {
+            steps {
+                sh 'mvn package'    
+		            echo "Maven Package Goal Executed Successfully!";
+            }
+        }
+        
+        stage('Jacoco Reports') {
+            steps {
+                  jacoco()
+                  echo "Publishing Jacoco Code Coverage Reports";
+            }
+        }
+
+	stage('SonarQube analysis') {
+            steps {
+		// Change this as per your Jenkins Configuration
+                withSonarQubeEnv('SonarQube') {
+                    sh 'mvn package sonar:sonar'
+                }
+            }
+        }
+        
+    }
+    post {
+        
+        success {
+            echo 'This will run only if successful'
+        }
+        failure {
+            echo 'This will run only if failed'
+        }
+    
+    }
+}
