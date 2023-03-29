@@ -138,7 +138,6 @@ pipeline {
 
 	stage('SonarQube analysis') {
             steps {
-		// Change this as per your Jenkins Configuration
                 withSonarQubeEnv('SonarQube') {
                     sh 'mvn package sonar:sonar'
                 }
@@ -157,3 +156,20 @@ pipeline {
     
     }
 }
+
+
+nexusArtifactUploader(
+        nexusVersion: 'nexus3',
+        protocol: 'http',
+        nexusUrl: "${NEXUS_URL}",
+        groupId: 'com.example',
+        version: version,
+        repository: "${NEXUS_REPOSITORY}",
+        credentialsId: "${NEXUS_LOGIN}",
+        artifacts: [
+            [artifactId: 'my-app',
+             classifier: '',
+             file: '/target/my-app-1.0-SNAPSHOT.jar',
+             type: 'jar']
+        ]
+     )
