@@ -6,7 +6,6 @@ services:
     build: 
       context: ./jenkins
       dockerfile: Dockerfile
-    #image: jenkins-custom
     restart: always
     privileged: true
     user: root
@@ -34,7 +33,6 @@ services:
     build: 
       context: ./sonar
       dockerfile: Dockerfile
-    #image: sonar-custom
     depends_on:
       - sonarqube-db
     ports:
