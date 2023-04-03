@@ -49,6 +49,8 @@ services:
     networks:
       ci-cd:
         ipv4_address: 172.18.0.6
+      sonarnet:
+        ipv4_address: 10.0.0.6
 
   sonarqube-db:
     image: postgres:12
@@ -62,9 +64,8 @@ services:
     ports:
       - "5432:5432"
     networks:
-      ci-cd:
-        ipv4_address: 172.18.0.3
-      #- db 
+      sonarnet:
+        ipv4_address: 10.0.0.3 
   
   pgadmin:
     image: dpage/pgadmin4
@@ -81,16 +82,18 @@ services:
     volumes:
       - pgadmin-data:/var/lib/pgadmin
     networks:
-      ci-cd:
-        ipv4_address: 172.18.0.5
-     # - db
+      sonarnet:
+        ipv4_address: 10.0.0.5
 
 networks:
   ci-cd:
     ipam:
       config:
        - subnet: 172.18.0.0/16
-  db:
+  sonarnet:
+    ipam:
+      config:
+       - subnet: 10.0.0.0/16
 
 volumes:
   jenkins-data:
