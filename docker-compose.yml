@@ -64,7 +64,9 @@ services:
       - "5432:5432"
     networks:
       sonarnet:
-        ipv4_address: 10.0.0.3 
+        ipv4_address: 10.0.0.3
+      db-admin:
+        ipv4_address: 11.0.0.3 
   
   pgadmin:
     image: dpage/pgadmin4
@@ -81,18 +83,22 @@ services:
     volumes:
       - pgadmin-data:/var/lib/pgadmin
     networks:
-      sonarnet:
-        ipv4_address: 10.0.0.5
+      db-admin:
+        ipv4_address: 11.0.0.5
 
 networks:
   ci-cd:
     ipam:
       config:
-       - subnet: 172.18.0.0/16
+       - subnet: 172.18.0.0/29
   sonarnet:
     ipam:
       config:
-       - subnet: 10.0.0.0/16
+       - subnet: 10.0.0.0/29
+  db-admin:
+    ipam:
+      config:
+       - subnet: 11.0.0.0/29
 
 volumes:
   jenkins-data:
