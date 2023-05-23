@@ -16,7 +16,7 @@ pipeline {
         }
     
     
-        stage('Build with Maven'){
+        stage('Build, test and package with Maven'){
             steps{
                 sh 'mvn clean jacoco:prepare-agent package jacoco:report -DargLine="@{argLine} -Dxxx=yyy"'
             }

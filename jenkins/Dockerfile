@@ -10,6 +10,4 @@ RUN cd /opt && \
     tar -xf apache-maven-3.9.1-bin.tar.gz && \
     rm apache-maven-3.9.1-bin.tar.gz && \
     ln -s /opt/apache-maven-3.9.1/bin/mvn /usr/local/bin/mvn
-RUN curl -sL https://deb.nodesource.com/setup_14.x | bash - \
-    && apt-get install -y nodejs 
 CMD ["/usr/local/bin/jenkins.sh"]
